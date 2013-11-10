@@ -44,8 +44,6 @@ SIZE=$(TOOLCHAIN_PATH)/bin/arm-none-eabi-size
 
 RAMSIZE=`$(STINFO) --flash 2>/dev/null`
 
-#OBJ+=
-
 DEFINES+=-DRAMSIZE=$(RAMSIZE)
 CFLAGS+=-I./inc
 CFLAGS+=-I$(SPLIBPATH)/inc
@@ -73,8 +71,10 @@ YELLOW="\e[33m"
 CLR="\e[00m"
 
 
-all: $(MAIN) size
+all: $(OBJPATH) $(MAIN) size
 
+$(OBJPATH):
+	mkdir -p $(OBJPATH)
 
 gdb_server:
 	$(STUTIL) $(STFU)
