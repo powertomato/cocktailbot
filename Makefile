@@ -18,12 +18,12 @@ TOOLCHAIN_PATH=~/.software/gcc-arm-none-eabi-4_7-2013q3/
 
 # project #
 MAIN=main.bin
-OBJ=main.o stm32f0xx_system.o
+OBJ=main.o stm32f0xx_system.o startup_stm32f0xx.o
 
 # flags #
 DEFINES=-DDEBUG -DUSE_FULL_ASSERT=1 -DUSE_STDPERIPH_DRIVER
-CFLAGS=-g3 -mcpu=cortex-m0 -mthumb -mno-thumb-interwork -msoft-float -fdata-sections -ffunction-sections -Wl,--gc-sections -Os
-LDFLAGS=-lnosys -Wl,--gc-sections
+CFLAGS=-fomit-frame-pointer -g -gdwarf-2 -mcpu=cortex-m0 -mthumb -mno-thumb-interwork -msoft-float -fdata-sections -ffunction-sections -Wl,--gc-sections -Os
+LDFLAGS=-lnosys -Wl,--gc-sections -nostartfiles -T./stm32f0_std_periph_lib/linker_script/stm32f0_linker.ld
 
 #################################################
 #                 !! WARNING !!                 #
@@ -40,6 +40,7 @@ GCC=$(TOOLCHAIN_PATH)/bin/arm-none-eabi-gcc
 AS=$(TOOLCHAIN_PATH)/bin/arm-none-eabi-as
 GDB=$(TOOLCHAIN_PATH)/bin/arm-none-eabi-gdb
 OBJCPY=$(TOOLCHAIN_PATH)/bin/arm-none-eabi-objcopy
+SIZE=$(TOOLCHAIN_PATH)/bin/arm-none-eabi-size
 
 RAMSIZE=`$(STINFO) --flash 2>/dev/null`
 
@@ -72,7 +73,8 @@ YELLOW="\e[33m"
 CLR="\e[00m"
 
 
-all: $(MAIN)
+all: $(MAIN) size
+
 
 gdb_server:
 	$(STUTIL) $(STFU)
@@ -83,14 +85,20 @@ debug:
 $(MAIN): $(MAINELF)
 	$(ECHO) Converting:"\t" $(YELLOW)\"$<\"$(CLR)
 	@$(OBJCPY) $(MAINELF) -Obinary $(MAIN)
-
 $(MAINELF): $(OBJECTS)
 	$(ECHO) Linking:"\t" $(YELLOW)\"$<\"$(CLR)
 	@$(GCC) $(CFLAGS) $(LDFLAGS) $(OBJECTS) -o $(MAINELF)
 
+size: $(MAINELF)
+	@$(SIZE) $(MAINELF)
+
 $(OBJPATH)/%.o : $(SRCPATH)/%.c
 	$(ECHO) $(GREEN)[Application] $(CLR) Compiling:"\t" $(YELLOW)\"$<\"$(CLR)
 	@$(GCC) $(CFLAGS) $(DEFINES) -c $< -o $@
+$(OBJPATH)/%.o : $(SRCPATH)/%.s
+	$(ECHO) $(GREEN)[Application] $(CLR) Compiling:"\t" $(YELLOW)\"$<\"$(CLR)
+	@$(GCC) -x assembler-with-cpp $(CFLAGS) -c $< -o $@
+
 
 $(OBJPATH)/%.o : $(SPLIBPATH)/src/%.c
 	$(ECHO) $(GREEN)[STD_Periph Lib] $(CLR) Compiling:"\t" $(YELLOW)\"$<\"$(CLR)

@@ -1,9 +1,10 @@
-
 #include <stm32f0xx.h>
 #include <stm32f0xx_conf.h>
 #include <stm32f0xx_rcc.h>
 #include <stm32f0xx_gpio.h>
 
+
+void delay(int);
 
 int main(void) {
 	/*!< At this stage the microcontroller clock setting is already configured, 
@@ -28,12 +29,18 @@ int main(void) {
 		unsigned int i;
 		GPIO_SetBits(GPIOC, GPIO_Pin_8);
 		GPIO_ResetBits(GPIOC, GPIO_Pin_9);
-		/*for(i=0xFFFFFFFF; i>0; i--);
+		delay(500000);
 		GPIO_SetBits(GPIOC, GPIO_Pin_9);
-		GPIO_ResetBits(GPIOC, GPIO_Pin_8);*/
+		GPIO_ResetBits(GPIOC, GPIO_Pin_8);
+		delay(500000);
 	}
 }
 
+void delay(int a) {
+    volatile int i;
+    for (i=0 ; i < a ; i++) { }
+}
+ 
 #ifdef  USE_FULL_ASSERT
 void assert_failed(uint8_t* file, uint32_t line) {
 	while (1) { }
@@ -41,7 +48,3 @@ void assert_failed(uint8_t* file, uint32_t line) {
 #endif
 
 
-__asm__(""
-		".globl _exit\n"
-		"_exit:\n"
-		"b     .\n");
