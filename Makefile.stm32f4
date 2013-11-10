@@ -1,0 +1,43 @@
+.PHONY: all clean install download erase cpu-info debug gdb_server check_target
+
+##############
+#   config   #
+##############
+
+# paths #
+OBJPATH=./obj
+INCPATH=./inc
+SRCPATH=./src
+INCHWPATH=$(INCPATH)/inc_stmf4
+SRCHWPATH=$(SRCPATH)/src_stmf4
+# http://www.st.com/web/catalog/tools/FM147/CL1794/SC961/SS1743/PF257901#
+SPLIBPATH=./stm32f4_std_periph_lib/Libraries/STM32F4xx_StdPeriph_Driver
+CMSISPATH=./stm32f4_std_periph_lib/Libraries/CMSIS
+CMSISDEV=./stm32f4_std_periph_lib/Libraries/CMSIS/Device/ST/STM32F4xx
+# https://github.com/texane/stlink
+STLINK_PATH=~/.software/stlink
+# https://launchpad.net/gcc-arm-embedded
+TOOLCHAIN_PATH=~/.software/gcc-arm-none-eabi-4_7-2013q3/
+
+# project #
+MAIN=main.bin
+OBJ=main.o system_stm32f4xx.o startup_stm32f4xx.o
+
+# flags #
+DEFINES=-DDEBUG -DUSE_FULL_ASSERT=1 -DUSE_STDPERIPH_DRIVER -DSTM32F40_41xxx
+CFLAGS=-fomit-frame-pointer -g -gdwarf-2 -Os --std=c99
+CFLAGS += -fdata-sections -ffunction-sections -Wl,--gc-sections
+CFLAGS += -mthumb -mcpu=cortex-m4 -mthumb-interwork
+CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
+CFLAGS += -ffreestanding -nostdlib
+
+LDFLAGS=-lnosys -Wl,--gc-sections -nostartfiles -T./stm32f4_std_periph_lib/linker_script/stm32f4xx_linker.ld
+
+TARGET="F4 Device"
+
+#################################################
+#                 !! WARNING !!                 #
+## warranty void if you scroll past this line  ##
+#################################################
+
+include common.mk
