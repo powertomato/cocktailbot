@@ -1,37 +1,41 @@
 #include <platform.h>
-
-void delay(int);
+#include <dig_in.h>
+#include <dig_out.h>
+#include <adc.h>
 
 int main(void) {
+	dig_out_init();
+	dig_in_init();
+	adc_init();
 
-	/* GPIOC Periph clock enable */
-	BTN_CLOCK_SETUP();
-	LED_CLOCK_SETUP();
+	dig_in_t b0 = {DIG_IN0,PULL_DOWN,false}; 
+	dig_in_t not_b0 = {DIG_IN0,PULL_UP,true};
+	dig_in_setup(&b0);
 
-	{
-		GPIO_InitTypeDef gpio_init;
-		gpio_init = LED_CONFIG;
-		GPIO_Init(LEDPORT, &gpio_init);
+	dig_out_t l0 = {LED0,PULL_NO};
+	dig_out_t l1 = {LED1,PULL_NO};
+	dig_out_setup(&l0);
+	dig_out_setup(&l1);
 
-		gpio_init = BTN_CONFIG;
-		GPIO_Init(BTNPORT, &gpio_init);
+	adc_setup(WHEEL1);
+	adc_setup(WHEEL2);
+	adc_setup(WHEEL3);
+
+	while (1) { 
+		int volt = adc_read_mV(WHEEL1);
+		if( volt>1500 ){
+			dig_out_set( &l1 );
+		}else{
+			dig_out_clr( &l1 );
+		}
+		if( dig_in_read( &b0 ) ){
+			dig_out_set( &l0 );
+		}else{
+			dig_out_clr( &l0 );
+		}
+
+			
 	}
-	
-
-	while (1) {
-		unsigned int i;
-		GPIO_SetBits(LEDPORT, LED0_PIN);
-		GPIO_ResetBits(LEDPORT, LED1_PIN);
-		delay(900000);
-		GPIO_SetBits(LEDPORT, LED1_PIN);
-		GPIO_ResetBits(LEDPORT, LED0_PIN);
-		delay(900000);
-	}
-}
-
-void delay(int a) {
-    volatile int i;
-    for (i=0 ; i < a ; i++) { }
 }
  
 #ifdef  USE_FULL_ASSERT

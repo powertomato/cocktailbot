@@ -21,11 +21,16 @@ TOOLCHAIN_PATH=~/.software/gcc-arm-none-eabi-4_7-2013q3/
 
 # project #
 MAIN=main.bin
-OBJ=main.o system_stm32f0xx.o startup_stm32f0xx.o
+OBJ=main.o \
+	dig_out.o \
+	dig_in.o \
+	adc.o
+
+OBJ+=system_stm32f0xx.o startup_stm32f0xx.o
 
 # flags #
 DEFINES=-DDEBUG -DUSE_FULL_ASSERT=1 -DUSE_STDPERIPH_DRIVER
-CFLAGS=-fomit-frame-pointer -g -gdwarf-2 -mcpu=cortex-m0 -mthumb -mno-thumb-interwork -msoft-float -fdata-sections -ffunction-sections -Wl,--gc-sections -Os --std=c99 -nostdlib
+CFLAGS=-fomit-frame-pointer -g -gdwarf-2 -mcpu=cortex-m0 -mthumb -mno-thumb-interwork -msoft-float -fdata-sections -ffunction-sections -Wl,--gc-sections --std=c99 -nostdlib #-Os 
 LDFLAGS=-lnosys -Wl,--gc-sections -nostartfiles -T./stm32f0_std_periph_lib/linker_script/stm32f0_linker.ld
 
 TARGET="F0 Device"
