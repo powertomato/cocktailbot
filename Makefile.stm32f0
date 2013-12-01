@@ -24,7 +24,8 @@ MAIN=main.bin
 OBJ=main.o \
 	dig_out.o \
 	dig_in.o \
-	adc.o
+	adc.o \
+	servo.o
 
 OBJ+=system_stm32f0xx.o startup_stm32f0xx.o
 

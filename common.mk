@@ -11,7 +11,7 @@ GDB=$(TOOLCHAIN_PATH)/bin/arm-none-eabi-gdb
 OBJCPY=$(TOOLCHAIN_PATH)/bin/arm-none-eabi-objcopy
 SIZE=$(TOOLCHAIN_PATH)/bin/arm-none-eabi-size
 
-RAMSIZE=`$(STINFO) --flash 2>/dev/null)`
+RAMSIZE=`$(STINFO) --flash 2>/dev/null`
 REALTARGET=`$(STINFO) --descr $(STFUERR)`
 
 DEFINES+=-DRAMSIZE=$(RAMSIZE)

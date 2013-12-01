@@ -169,7 +169,7 @@ void TIM_Config(void)
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource8, GPIO_AF_2);
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_2);
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_2);
-  GPIO_PinAFConfig(GPIOA, GPIO_PinSource11, GPIO_AF_2);
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource11n, GPIO_AF_2);
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource7, GPIO_AF_2);
     
   /* GPIOB Configuration: Channel 2N and 3N as alternate function push-pull */
