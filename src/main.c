@@ -42,6 +42,8 @@ int main(void) {
 	adc_setup(WHEEL2);
 	adc_setup(WHEEL3);
 
+	adc_start();
+
 	while (1) { 
 		
 		{

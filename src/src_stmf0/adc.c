@@ -3,6 +3,7 @@
 #include <platform.h>
 #include <stm32f0xx_adc.h>
 #include <stm32f0xx_gpio.h>
+#include <stm32f0xx_dma.h>
 
 #define ADC_CONFIG (ADC_InitTypeDef){ \
 	.ADC_Resolution = ADC_Resolution_12b, \
@@ -19,7 +20,11 @@
 	.GPIO_PuPd = GPIO_PuPd_DOWN }
 #define ADC_SAMPLE_TIME ADC_SampleTime_239_5Cycles
 
+#define ADC1_DR_Address    0x40012440
+
 static bool ch_enable[MAX_CHANNELS];
+__IO uint16_t adc_conv_array[MAX_CHANNELS];
+
 
 void adc_init(){
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
@@ -27,18 +32,18 @@ void adc_init(){
 
 	DMA_InitTypeDef dma_init;
 	DMA_DeInit(DMA1_Channel1);
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC1_DR_Address;
-	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)RegularConvData_Tab;
-	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
-	DMA_InitStructure.DMA_BufferSize = MAX_CHANNELS;
-	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
-	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
-	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
-	DMA_InitStructure.DMA_Priority = DMA_Priority_High;
-	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
-	DMA_Init(DMA1_Channel1, &DMA_InitStructure);
+	dma_init.DMA_PeripheralBaseAddr = (uint32_t)ADC1_DR_Address;
+	dma_init.DMA_MemoryBaseAddr = (uint32_t)adc_conv_array;
+	dma_init.DMA_DIR = DMA_DIR_PeripheralSRC;
+	dma_init.DMA_BufferSize = MAX_CHANNELS;
+	dma_init.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	dma_init.DMA_MemoryInc = DMA_MemoryInc_Enable;
+	dma_init.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+	dma_init.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+	dma_init.DMA_Mode = DMA_Mode_Circular;
+	dma_init.DMA_Priority = DMA_Priority_High;
+	dma_init.DMA_M2M = DMA_M2M_Disable;
+	DMA_Init(DMA1_Channel1, &dma_init);
 
 	ADC_DMARequestModeConfig(ADC1, ADC_DMAMode_Circular);
 	ADC_DMACmd(ADC1, ENABLE);  
@@ -83,12 +88,12 @@ void adc_setup(int channel){
 		case 15: ADC_ChannelConfig(ADC1, ADC_Channel_15 , ADC_SAMPLE_TIME); break;
 	}
 	ch_enable[channel] = true;
-	adc_start();
+	//adc_start();
 }
 
 
 int adc_read(int channel){
-	static int last_channel = 0;
+/*	static int last_channel = 0;
 	if( !(ch_enable[channel]) ) {
 		return -1;
 	}
@@ -102,7 +107,9 @@ int adc_read(int channel){
 				return val;
 			}
 		}
-	}
+	}*/
+	return adc_conv_array[channel];
+
 }
 
 int adc_read_mV(int channel) {
