@@ -18,6 +18,15 @@ void show_number(uint8_t n) {
 	}
 }
 
+void delay_ms(int ms) {
+	int64_t t;
+	int64_t t2;
+
+	t=get_current_time();
+	t2=t+1500;
+	wait_until(t2);
+}
+
 int main(void) {
 	
 	dig_out_init();
@@ -39,13 +48,34 @@ int main(void) {
 	servo_init();
 	rtc_init();
 	adc_setup(WHEEL1);
-	adc_setup(WHEEL2);
 	adc_setup(WHEEL3);
+	adc_setup(WHEEL2);
 
 	adc_start();
 
 	while (1) { 
-		
+
+		servo_set(0,-127);
+		servo_set(1,-127);
+		servo_set(2,-127);
+		delay_ms(1500);
+
+		servo_set(0,0);
+		servo_set(1,0);
+		servo_set(2,0);
+		delay_ms(1500);
+
+		servo_set(0,127);
+		servo_set(1,127);
+		servo_set(2,127);
+		delay_ms(1500);
+
+		servo_set(0,0);
+		servo_set(1,0);
+		servo_set(2,0);
+		delay_ms(1500);
+
+		/*
 		{
 			static int w0_pos = 0;
 			static bool p_w0 = false;
@@ -59,15 +89,58 @@ int main(void) {
 
 			if( p_w0 != w0 ) {
 				p_w0 = w0;
-				if( w0 ){
-					dig_out_set( LED0 );
-				}else{
-					dig_out_clr( LED0 );
+				if( !w0 ){
 					w0_pos = (w0_pos+1) % 6;
 				}
 			}
-			show_number( 1<<w0_pos );
+			//show_number( 1<<w0_pos );
 		}
+
+		{
+			static int w1_pos = 0;
+			static bool p_w1 = false;
+			int volt = adc_read_mV(WHEEL2);
+			bool w1;
+			if( p_w1 ) {
+				w1 = volt>1300;
+			}else{
+				w1 = volt>1900;
+			}
+
+			if( p_w1 != w1 ) {
+				p_w1 = w1;
+				if( !w1 ){
+					w1_pos = (w1_pos+1) % 6;
+				}
+			}
+			//show_number( 1<<w1_pos );
+		}
+		
+		{
+			static int w2_pos = 0;
+			static bool p_w2 = false;
+			int volt = adc_read_mV(WHEEL3);
+			bool w2;
+			if( p_w2 ) {
+				w2 = volt>1300;
+			}else{
+				w2 = volt>1900;
+			}
+
+			if( p_w2 != w2 ) {
+				p_w2 = w2;
+				if( !w2 ){
+					w2_pos = (w2_pos+1) % 6;
+				}
+			}
+			show_number( 1<<w2_pos );
+		} */
+
+		//TODO wtf is this?!
+			/* Test DMA1 TC flag */
+			//while((DMA_GetFlagStatus(DMA1_FLAG_TC1)) == RESET ){}
+			/* Clear DMA TC flag */
+			//DMA_ClearFlag(DMA1_FLAG_TC1);
 		
 
 		/* while(1){

@@ -75,9 +75,10 @@ enum dig_in_pins {
 
 #define MAX_CHANNELS 3
 static pin_table_entry_t channel_table[] = {
-	PIN_ASG(GPIOA,GPIO_Pin_0),    // 0
-	PIN_ASG(GPIOA,GPIO_Pin_1),    // 1
-	PIN_ASG(GPIOA,GPIO_Pin_2),    // 2
+	//PIN_ASG(GPIOA,GPIO_Pin_0),    // 0
+	PIN_ASG(GPIOA,GPIO_Pin_4),    // 0
+	PIN_ASG(GPIOA,GPIO_Pin_5),    // 1
+	PIN_ASG(GPIOA,GPIO_Pin_6),    // 2
 };
 
 #define WHEEL1 0
