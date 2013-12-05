@@ -2,10 +2,10 @@
 #include <platform.h>
 
 
-#define PERIOD 20000
-#define PULSE_1_0_MS (1000-1) //Full right
-#define PULSE_1_5_MS (1500-1) //Center
-#define PULSE_2_0_MS (2000-1) //Full left
+#define PERIOD (20000)
+#define PULSE_1_0_MS (1000) //Full right
+#define PULSE_1_5_MS (1500) //Center
+#define PULSE_2_0_MS (2000) //Full left
 
 #define TIM_OC_CONFIG (TIM_OCInitTypeDef){ \
 	.TIM_OCMode = TIM_OCMode_PWM2, \
@@ -42,7 +42,7 @@ void servo_init() {
 	TIM_TimeBaseInitTypeDef tim_init;
 
 	/* 48MHz/(48*20000) = 50 Hz */
-	tim_init.TIM_Prescaler = 48;
+	tim_init.TIM_Prescaler = 48-1;
 	tim_init.TIM_CounterMode = TIM_CounterMode_Up;
 	tim_init.TIM_Period = PERIOD;
 	tim_init.TIM_ClockDivision = 0;

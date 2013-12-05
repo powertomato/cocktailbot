@@ -25,7 +25,8 @@ OBJ=main.o \
 	dig_out.o \
 	dig_in.o \
 	adc.o \
-	servo.o
+	servo.o \
+	rtc.o
 
 OBJ+=system_stm32f0xx.o startup_stm32f0xx.o
 

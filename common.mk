@@ -50,7 +50,7 @@ $(OBJPATH):
 	mkdir -p $(OBJPATH)
 
 gdb_server:
-	$(STUTIL) $(STFU)
+	$(STUTIL) 
 
 debug:
 	$(GDB) $(MAINELF) -ex "target remote localhost:4242"

@@ -23,6 +23,29 @@ static bool ch_enable[MAX_CHANNELS];
 
 void adc_init(){
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1 , ENABLE);
+
+	DMA_InitTypeDef dma_init;
+	DMA_DeInit(DMA1_Channel1);
+	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC1_DR_Address;
+	DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)RegularConvData_Tab;
+	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
+	DMA_InitStructure.DMA_BufferSize = MAX_CHANNELS;
+	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;
+	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
+	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
+	DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+	DMA_Init(DMA1_Channel1, &DMA_InitStructure);
+
+	ADC_DMARequestModeConfig(ADC1, ADC_DMAMode_Circular);
+	ADC_DMACmd(ADC1, ENABLE);  
+
+	/* DMA1 Channel1 enable */
+	DMA_Cmd(DMA1_Channel1, ENABLE);
+
 	ADC_InitTypeDef adc_init_cfg;
 	adc_init_cfg = ADC_CONFIG;
 	ADC_Init(ADC1, &adc_init_cfg);
