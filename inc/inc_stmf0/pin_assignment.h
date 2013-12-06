@@ -35,7 +35,7 @@ typedef struct {
 #define PUMP11 21
 #define PUMP12 22
 
-#define DIG_OUT_MAX 22
+#define DIG_OUT_MAX 23
 
 static pin_table_entry_t dig_out_table[] = {
 	PIN_ASG(GPIOA,GPIO_Pin_8),
@@ -47,9 +47,9 @@ static pin_table_entry_t dig_out_table[] = {
 	PIN_ASG(GPIOB,GPIO_Pin_14),
 	PIN_ASG(GPIOB,GPIO_Pin_13),
 
-	PIN_ASG(GPIOB,GPIO_Pin_12),
-	PIN_ASG(GPIOF,GPIO_Pin_0),
-	PIN_ASG(GPIOF,GPIO_Pin_1),
+	PIN_ASG(GPIOC,GPIO_Pin_0),
+	PIN_ASG(GPIOC,GPIO_Pin_1),
+	PIN_ASG(GPIOC,GPIO_Pin_2),
 
 	PIN_ASG(GPIOC,GPIO_Pin_12),
 	PIN_ASG(GPIOC,GPIO_Pin_11),
@@ -64,12 +64,15 @@ static pin_table_entry_t dig_out_table[] = {
 	PIN_ASG(GPIOB,GPIO_Pin_4),
 	PIN_ASG(GPIOB,GPIO_Pin_8),
 	PIN_ASG(GPIOD,GPIO_Pin_2),
+
+	PIN_ASG(GPIOC,GPIO_Pin_3)
 };
 
 #define DIG_IN_CLK RCC_AHBPeriph_GPIOA
 #define DIG_INPORT GPIOA
 enum dig_in_pins {
 	DIG_IN0 = GPIO_Pin_0,
+	DIG_IN1 = GPIO_Pin_1,
 };
 
 

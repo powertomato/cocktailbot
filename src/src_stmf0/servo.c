@@ -108,13 +108,13 @@ void servo_set(int num, int8_t pos) {
 	oc_init.TIM_Pulse = pulse;
 
 	switch( num ) {
-		case 0:
+		case 2:
 			TIM_OC2Init(TIMER, &oc_init);
 			break;
 		case 1:
 			TIM_OC3Init(TIMER, &oc_init);
 			break;
-		case 2:
+		case 0:
 			TIM_OC4Init(TIMER, &oc_init);
 			break;
 		default:

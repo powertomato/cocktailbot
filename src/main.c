@@ -27,15 +27,57 @@ void delay_ms(int ms) {
 	wait_until(t2);
 }
 
+enum {
+	WAIT=0,
+	THREE_WHEELS,
+	TWO_WHEELS,
+	ONE_WHEEL,
+	SCHENK_EI
+} state;
+
+
+
+static int w0_pos = 0;
+static int w1_pos = 0;
+static int w2_pos = 0;
+static int64_t last_button_press=0;
+
+
+#define WHEEL_DELAY 1000
+void start_all_wheels() {
+	servo_set(0,-96);
+	servo_set(1,-110);
+	servo_set(2,-127);
+	delay_ms(WHEEL_DELAY);
+	dig_out_set(MOT1);
+	dig_out_set(MOT2);
+	dig_out_set(MOT3);
+}
+
+void stop_wheel1(){
+	dig_out_clr(MOT1);
+	servo_set(0,127);
+}
+void stop_wheel2(){
+	dig_out_clr(MOT2);
+	servo_set(1,127);
+}
+void stop_wheel3(){
+	dig_out_clr(MOT3);
+	servo_set(2,127);
+}
+
 int main(void) {
 	
 	dig_out_init();
 	dig_in_init();
 	adc_init();
 
-	dig_in_t b0 = {DIG_IN0,PULL_DOWN,false}; 
-	dig_in_t not_b0 = {DIG_IN0,PULL_UP,true};
-	dig_in_setup(&b0);
+	dig_in_t lever = {DIG_IN1,PULL_DOWN,false}; 
+	dig_in_setup(&lever);
+
+	dig_in_t button = {DIG_IN0,PULL_DOWN,false}; 
+	dig_in_setup(&button);
 
 	int i;
 	for(i=0; i<=LED7; i++ ) {
@@ -51,33 +93,22 @@ int main(void) {
 	adc_setup(WHEEL3);
 	adc_setup(WHEEL2);
 
-	adc_start();
+	servo_set(0,127);
+	servo_set(1,127);
+	servo_set(2,127);
 
+	adc_start();
+	int foo1=0;
+	int foo2=0;
+	int foo3=0;
+	last_button_press = get_current_time();
 	while (1) { 
 
-		servo_set(0,-127);
-		servo_set(1,-127);
-		servo_set(2,-127);
-		delay_ms(1500);
-
-		servo_set(0,0);
-		servo_set(1,0);
-		servo_set(2,0);
-		delay_ms(1500);
-
-		servo_set(0,127);
-		servo_set(1,127);
-		servo_set(2,127);
-		delay_ms(1500);
-
-		servo_set(0,0);
-		servo_set(1,0);
-		servo_set(2,0);
-		delay_ms(1500);
-
-		/*
+		
+		/////////////////
+		// WHEEL STUFF //
+		/////////////////
 		{
-			static int w0_pos = 0;
 			static bool p_w0 = false;
 			int volt = adc_read_mV(WHEEL1);
 			bool w0;
@@ -93,11 +124,10 @@ int main(void) {
 					w0_pos = (w0_pos+1) % 6;
 				}
 			}
-			//show_number( 1<<w0_pos );
+			show_number( 1<<w0_pos );
 		}
 
 		{
-			static int w1_pos = 0;
 			static bool p_w1 = false;
 			int volt = adc_read_mV(WHEEL2);
 			bool w1;
@@ -117,7 +147,6 @@ int main(void) {
 		}
 		
 		{
-			static int w2_pos = 0;
 			static bool p_w2 = false;
 			int volt = adc_read_mV(WHEEL3);
 			bool w2;
@@ -133,8 +162,61 @@ int main(void) {
 					w2_pos = (w2_pos+1) % 6;
 				}
 			}
-			show_number( 1<<w2_pos );
-		} */
+			//show_number( 1<<w2_pos );
+		} 
+		
+		///////////////
+		// FSM STUFF //
+		///////////////
+
+		{
+			static bool p_button = false;
+			bool s_button = dig_in_read( &button );
+			bool button_event = false;
+
+			if( s_button != p_button ) {
+				int64_t current_time = get_current_time();
+				if( s_button && (current_time-last_button_press) >= 100 ){
+					button_event = true;
+					last_button_press = current_time;
+				}
+				p_button = s_button;
+			}
+			//show_number(state);
+			switch( state ) {
+				case WAIT:
+					//if( dig_in_read(&lever) ) {
+					if( button_event ) {
+						state = THREE_WHEELS;
+						start_all_wheels();
+					}
+					break;
+
+				case THREE_WHEELS:
+					if(button_event) {
+						state = TWO_WHEELS;
+						stop_wheel1();
+					}
+					break;
+				case TWO_WHEELS:
+					if(button_event) {
+						state = ONE_WHEEL;
+						stop_wheel2();
+					}
+					break;
+				case ONE_WHEEL:
+					if(button_event) {
+						state = RESET;
+						stop_wheel3();
+					}
+					break;
+				case SCHENK_EI:
+					if(false) {
+						state = RESET;
+					}
+					break;
+			}
+			}
 
 		//TODO wtf is this?!
 			/* Test DMA1 TC flag */
